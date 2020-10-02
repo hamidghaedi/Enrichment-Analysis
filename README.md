@@ -2,8 +2,8 @@
 R codes I am using for getting from RNA-seq raw count to Pathways
 
 
-
-Assume we performed an RNA-seq (or microarray gene expression) experiment and now want to know what pathway/biological process shows enrichment for our [differentially expressed] genes. Indeed, there are several terminologies someone should be familiar with before diving into the topic thoroughly: 
+## Introduction
+Assume we performed an RNA-seq (or microarray gene expression) experiment and now want to know what pathway/biological process shows enrichment for our [differentially expressed] genes. There are terminologies someone may need to be familiar with before diving into the topic thoroughly: 
 
 **Gene set**
 
@@ -54,3 +54,14 @@ It was developed by Broad Institute. This is the preferred method when genes are
 
 GSEA software maybe finds on its [homepage](https://www.gsea-msigdb.org/gsea/index.jsp). However, there are some Bioconductor packages which use a similar approach to do GSEA, I like to use this one : [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html). Also there are some R package which can do ROA and GSEA for you like [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)
 
+
+## Refrences
+1- [clusterProfiler: universal enrichment tool for functional and comparative study](http://yulab-smu.top/clusterProfiler-book/)
+
+2- [Fast Gene Set Enrichment Analysis](https://bioconductor.org/packages/release/bioc/html/fgsea.html)
+
+3- [Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles](https://www.pnas.org/content/102/43/15545.abstract)
+
+4- [DAVID Bioinformatics Resources 6.8](https://david.ncifcrf.gov/home.jsp)
+
+5- [Clustering of DAVID gene enrichment results from gene expression studies](https://www.biostars.org/p/299161/) by [Kevin Blighe](https://www.biostars.org/u/41557/)
