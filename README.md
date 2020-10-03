@@ -74,7 +74,7 @@ C7: immunologic signature gene sets  defined directly from microarray gene expre
 
 C8: cell type signature gene sets  curated from cluster markers identified in single-cell sequencing studies of human tissue.
 
-To download these gene sets in a folder go the MSigDB [website](https://www.gsea-msigdb.org/gsea/login.jsp#msigdb), registe with your email and download the data. 
+To download these gene sets in a folder go the MSigDB [website](https://www.gsea-msigdb.org/gsea/login.jsp#msigdb), registe with your email and download the data. Here first we should do a **(1)diffrential expression analysis**, then doing **(2) GSEA** and finally **(3) Visualization**.
 
 ```R
 #_______________Loading packages______________________________#
