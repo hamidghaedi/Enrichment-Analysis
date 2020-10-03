@@ -31,7 +31,7 @@ KEGG is a collection of manually curated pathway maps representing molecular int
 
 There are different methods widely used for functional enrichment analysis: 
 
-**1-	Over Representation Analysis (ORA):**
+## 1-	Over Representation Analysis (ORA):
 
 This is the simplest version of enrichment analysis and at the same time the most widely used approach. The concept in this approach is based on a Fisher exact test p value in a contingency table. For example, supposed we come up with 160 differentially expressed genes from a microarray expression experiment which was able to investigate 17,000 gene expression levels. We found that 30 genes from our findings are somehow member of a pathway which has 50 gene members (call it pathway X). To find enrichment we can perform a Fisher exact test on the following contingency table:
 
@@ -42,7 +42,7 @@ This is the simplest version of enrichment analysis and at the same time the mos
 
 There are relatively large number of web-tools R package for ORA. Personally I am a fan of [DAVID](https://david.ncifcrf.gov/home.jsp) webtools however its lat update was in 2016 (DAVID 6.8 Oct. 2016).  
 
-**2-	Gene Set Enrichment Analysis (GSEA):**
+## 2-	Gene Set Enrichment Analysis (GSEA):
 
 It was developed by Broad Institute. This is the preferred method when genes are coming from an expression experiment like microarray and RNA-seq. However, the original methodology was designed to work on microarray but later modification made it suitable for RNA-seq also. In this approach, you need to rank your genes based on a statistic (like what DESeq2 provide), and then perform enrichment analysis against different pathways (= gene set). You have to download the gene set files into you local system. The point is that here the algorithm will use all genes in the ranked list for enrichment analysis. [in contrast to ORA where only genes passed a specific threshold (like DE ones) would be used for enrichment analysis]. You can find more details about the methodology on the original [PNAS paper](https://www.pnas.org/content/102/43/15545.abstract), here is a summary of why one should use this approach instead of ORA:
 
@@ -86,6 +86,10 @@ library(tidyr)
 library(fgsea)
 library(ggplot2)
 library(reshape2)
+library(ComplexHeatmap)
+library(circlize)
+```
+```R
  
 #________________diffrential expression analysis______________#
 # reading expression data matrix and getting rid of what we dont like
@@ -276,8 +280,102 @@ table(data.frame(rowSums(h.dat)))
 # 1604  282   65   11    1    1 
 h.dat <- h.dat[data.frame(rowSums(h.dat)) >= 3, ]
 
+#
+topTable <- res[res$SYMBOL %in% rownames(h.dat), ]
+rownames(topTable) <- topTable$SYMBOL
+
+# match the order of rownames in toptable with that of h.dat
+topTableAligned <- topTable[which(rownames(topTable) %in% rownames(h.dat)),]
+topTableAligned <- topTableAligned[match(rownames(h.dat), rownames(topTableAligned)),]
+all(rownames(topTableAligned) == rownames(h.dat))
+
+# colour bar for -log10(adjusted p-value) for sig.genes
+dfMinusLog10FDRGenes <- data.frame(-log10(
+  topTableAligned[which(rownames(topTableAligned) %in% rownames(h.dat)), 'padj']))
+dfMinusLog10FDRGenes[dfMinusLog10FDRGenes == 'Inf'] <- 0
+
+# colour bar for fold changes for sigGenes
+dfFoldChangeGenes <- data.frame(
+  topTableAligned[which(rownames(topTableAligned) %in% rownames(h.dat)), 'log2FoldChange'])
+
+# merge both
+dfGeneAnno <- data.frame(dfMinusLog10FDRGenes, dfFoldChangeGenes)
+colnames(dfGeneAnno) <- c('Gene score', 'Log2FC')
+
+dfGeneAnno[,2] <- ifelse(dfGeneAnno$Log2FC > 0, 'Up-regulated',
+                         ifelse(dfGeneAnno$Log2FC < 0, 'Down-regulated', 'Unchanged'))
+colours <- list(
+  'Log2FC' = c('Up-regulated' = 'royalblue', 'Down-regulated' = 'yellow'))
+haGenes <- rowAnnotation(
+  df = dfGeneAnno,
+  col = colours,
+  width = unit(1,'cm'),
+  annotation_name_side = 'top')
+
+# Now a separate colour bar for the GSEA enrichment padj. This will 
+# also contain the enriched term names via annot_text()
+
+# colour bar for enrichment score from fgsea results
+dfEnrichment <- fgseaRes[, c("pathway", "NES")]
+dfEnrichment <- dfEnrichment[dfEnrichment$pathway %in% colnames(h.dat)]
+dd <- dfEnrichment$pathway
+dfEnrichment <- dfEnrichment[, -1]
+rownames(dfEnrichment) <- dd
+
+colnames(dfEnrichment) <- 'Normalized\n Enrichment score'
+haTerms <- HeatmapAnnotation(
+  df = dfEnrichment,
+  Term = anno_text(
+    colnames(h.dat),
+    rot = 45,
+    just = 'right',
+    gp = gpar(fontsize = 12)),
+  annotation_height = unit.c(unit(1, 'cm'), unit(8, 'cm')),
+  annotation_name_side = 'left')
+
+# now generate the heatmap
+hmapGSEA <- Heatmap(h.dat,
+                    name = 'GSEA hallmark pathways enrichment',
+                    split = dfGeneAnno[,2],
+                    col = c('0' = 'white', '1' = 'forestgreen'),
+                    rect_gp = gpar(col = 'grey85'),
+                    cluster_rows = TRUE,
+                    show_row_dend = TRUE,
+                    row_title = 'Top Genes',
+                    row_title_side = 'left',
+                    row_title_gp = gpar(fontsize = 11, fontface = 'bold'),
+                    row_title_rot = 90,
+                    show_row_names = TRUE,
+                    row_names_gp = gpar(fontsize = 11, fontface = 'bold'),
+                    row_names_side = 'left',
+                    row_dend_width = unit(35, 'mm'),
+                    cluster_columns = TRUE,
+                    show_column_dend = TRUE,
+                    column_title = 'Enriched terms',
+                    column_title_side = 'top',
+                    column_title_gp = gpar(fontsize = 12, fontface = 'bold'),
+                    column_title_rot = 0,
+                    show_column_names = FALSE,
+                    show_heatmap_legend = FALSE,
+                    clustering_distance_columns = 'euclidean',
+                    clustering_method_columns = 'ward.D2',
+                    clustering_distance_rows = 'euclidean',
+                    clustering_method_rows = 'ward.D2',
+                    bottom_annotation = haTerms)
+
+tiff("GSEA_enrichment_2.tiff", units="in", width=13, height=22, res=400)
+draw(hmapGSEA + haGenes,
+     heatmap_legend_side = 'right',
+     annotation_legend_side = 'right')
+dev.off()
 
 ```
+![alt text](https://github.com/hamidghaedi/Enrichment-Analysis/blob/main/GSEA_enrichment_2.png)
+
+## Session Info
+```R
+```
+
 
 ## Refrences
 1- [clusterProfiler: universal enrichment tool for functional and comparative study](http://yulab-smu.top/clusterProfiler-book/)
@@ -292,4 +390,4 @@ h.dat <- h.dat[data.frame(rowSums(h.dat)) >= 3, ]
 
 6- [Rank-rank hypergeometric overlap: identification of statistically significant overlap between gene-expression signatures](https://pubmed.ncbi.nlm.nih.gov/20660011/)
 
-
+7- [Clustering of DAVID gene enrichment results from gene expression studies](https://www.biostars.org/p/299161/) by [Kevin Blighe](https://www.biostars.org/u/41557/)
