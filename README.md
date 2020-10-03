@@ -52,7 +52,30 @@ It was developed by Broad Institute. This is the preferred method when genes are
 
 3- Cellular processes often affect sets of genes acting in concert, using ORA may lead to miss important effects on pathways.
 
-GSEA software maybe finds on its [homepage](https://www.gsea-msigdb.org/gsea/index.jsp). However, there are some Bioconductor packages which use a similar approach to do GSEA, I like to use this one : [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html). Also there are some R package which can do ROA and GSEA for you like [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)
+GSEA software maybe finds on its [homepage](https://www.gsea-msigdb.org/gsea/index.jsp). However, there are some Bioconductor packages which use a similar approach to do GSEA, I like to use this one : [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html). Also there are some R package which can do ROA and GSEA for you like [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html). 
+
+In the analysis after getting a ranked gene from diffrential expression analysis, we need to have gene lists for GSEA. The Molecular Signatures Database (MSigDB) is a collection of annotated gene sets for use with GSEA software and possibly those works like GSEA. The MSigDB gene sets are divided into 9 major collections:
+
+H: hallmark gene sets  are coherently expressed signatures derived by aggregating many MSigDB gene sets to represent well-defined biological states or processes.
+
+C1: positional gene sets  for each human chromosome and cytogenetic band.
+
+C2: curated gene sets  from online pathway databases, publications in PubMed, and knowledge of domain experts.
+
+C3: regulatory target gene sets  based on gene target predictions for microRNA seed sequences and predicted transcription factor binding sites.
+
+C4: computational gene sets  defined by mining large collections of cancer-oriented microarray data.
+
+C5: ontology gene sets  consist of genes annotated by the same ontology term.
+
+C6: oncogenic signature gene sets  defined directly from microarray gene expression data from cancer gene perturbations.
+
+C7: immunologic signature gene sets  defined directly from microarray gene expression data from immunologic studies.
+
+C8: cell type signature gene sets  curated from cluster markers identified in single-cell sequencing studies of human tissue.
+
+To download these gene sets in a folder go the MSigDB [website](https://www.gsea-msigdb.org/gsea/login.jsp#msigdb), registe with your email and download the data. 
+
 
 
 ## Refrences
@@ -64,4 +87,8 @@ GSEA software maybe finds on its [homepage](https://www.gsea-msigdb.org/gsea/ind
 
 4- [DAVID Bioinformatics Resources 6.8](https://david.ncifcrf.gov/home.jsp)
 
-5- [Clustering of DAVID gene enrichment results from gene expression studies](https://www.biostars.org/p/299161/) by [Kevin Blighe](https://www.biostars.org/u/41557/)
+5- [DESeq results to pathways in 60 Seconds with the fgsea package](https://stephenturner.github.io/deseq-to-fgsea/)
+
+6- [Rank-rank hypergeometric overlap: identification of statistically significant overlap between gene-expression signatures](https://pubmed.ncbi.nlm.nih.gov/20660011/)
+
+
