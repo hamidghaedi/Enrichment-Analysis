@@ -66,7 +66,7 @@ ggo <- groupGO(gene     = gene.df$ENTREZID,
 ggo_df <- data.frame(ggo)
 
 # This will return a table like this:
-```R
+```
 
 ![alt text](https://raw.githubusercontent.com/hamidghaedi/Enrichment-Analysis/main/GO_classification.JPG)
 
