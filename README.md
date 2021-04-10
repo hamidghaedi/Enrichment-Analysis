@@ -42,6 +42,35 @@ This is the simplest version of enrichment analysis and at the same time the mos
 
 There is a relatively large number of web-tools R package for ORA. Personally I am a fan of [DAVID](https://david.ncifcrf.gov/home.jsp) webtools however its last update was in 2016 (DAVID 6.8 Oct. 2016).  
 
+It is happening to me to have a list of genes and want to know what are common GO terms (usually BP) for these genes regardless of statistical significance. The package clusterProfiler provides a function groupGO that can be used to answer these kinds of questions. Here is how this function works:
+
+```R
+#________________GO_Classification_____________________#
+library(org.Hs.eg.db)
+library(clusterProfiler)
+
+# some genes from bladder cancer classification panel! 
+geneList <- c("KRT14", "KRT5", "CDH3", "FOXA1", "GATA3", "PPARG", "RB1" , "CCND1", "CDKN2Ap16", "FGFR3", "TP63")
+
+# convering gene symbol to gene ENTREZ ID
+gene.df <- bitr(geneList, fromType = "SYMBOL",
+                toType = c("ENSEMBL","ENTREZID" ),
+                OrgDb = org.Hs.eg.db)
+# GO classification,to read more about arguments used in this function please use ?groupGO to see help page
+ggo <- groupGO(gene     = gene.df$ENTREZID,
+               OrgDb    = org.Hs.eg.db,
+               ont      = "BP",
+               level    = 3,
+               readable = TRUE)
+
+ggo_df <- data.frame(ggo)
+
+# This will return a table like this:
+```R
+
+![alt text](https://raw.githubusercontent.com/hamidghaedi/Enrichment-Analysis/main/GO_classification.JPG)
+
+
 ## 2-	Gene Set Enrichment Analysis (GSEA):
 
 It was developed by Broad Institute. This is the preferred method when genes are coming from an expression experiment like microarray and RNA-seq. However, the original methodology was designed to work on microarray but later modification made it suitable for RNA-seq also. In this approach, you need to rank your genes based on a statistic (like what DESeq2 provide), and then perform enrichment analysis against different pathways (= gene set). You have to download the gene set files into your local system. The point is that here the algorithm will use all genes in the ranked list for enrichment analysis. [in contrast to ORA where only genes passed a specific threshold (like DE ones) would be used for enrichment analysis]. You can find more details about the methodology on the original [PNAS paper](https://www.pnas.org/content/102/43/15545.abstract), here is a summary of why one should use this approach instead of ORA:
