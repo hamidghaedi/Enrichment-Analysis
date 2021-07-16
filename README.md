@@ -1,5 +1,5 @@
 # Enrichment-Analysis
-R codes I am using for getting from RNA-seq raw count to Pathways
+R code for getting from RNA-seq raw count to biological pathways (read on [BioSatrs](https://www.biostars.org/p/467197/))
 
 
 ## Introduction
