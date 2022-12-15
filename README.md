@@ -40,7 +40,7 @@ This is the simplest version of enrichment analysis and at the same time the mos
 | in pathwayX     | 20                    | 30             |
 | not.in pathwayX | 16820                 | 130            |
 
-There is a relatively large number of web-tools R package for ORA. Personally I am a fan of [DAVID](https://david.ncifcrf.gov/home.jsp) webtools however its last update was in 2016 (DAVID 6.8 Oct. 2016).  
+There is a relatively large number of web-tools R package for ORA. Personally I am a fan of [DAVID](https://david.ncifcrf.gov/home.jsp) webtools for ORA.  
 
 It is happening to me to have a list of genes and want to know what are common GO terms (usually BP) for these genes regardless of statistical significance. The package clusterProfiler provides a function groupGO that can be used to answer these kinds of questions. Here is how this function works:
 
