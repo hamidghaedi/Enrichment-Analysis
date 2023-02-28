@@ -225,7 +225,7 @@ res <- merge(data.frame(res), ens2symbol, by=c("row"))
 
 # remove the NAs, averaging statitics for a multi-hit symbol
 res2 <- res %>% 
-  select(SYMBOL, stat) %>% 
+  dplyr::select(SYMBOL, stat) %>% 
   na.omit() %>% 
   distinct() %>% 
   group_by(SYMBOL) %>% 
